@@ -153,7 +153,7 @@ const SignUp = () => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+234 001 002 2121"
+              placeholder="08123456789"
               className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
               required
             />
