@@ -1,9 +1,52 @@
 import React from 'react'
+import axios from 'axios';
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import StateLogo from "../images/StateLogo.png"
 import Bg from '../images/Bg.png';
 
 const Login = () => {
+
+   //  State to store user input
+    const [formData, setFormData] = useState({
+      email: "",
+      password: "",
+    });
+
+   // 🔁 Update input fields
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+   // to handle the loading state and messages
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  
+
+  const handleSignIn = async (e) => {
+    // we have to prevent the default submission behavior
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const res = await axios.post("https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",{
+        email: formData.email,
+        password: formData.password,
+      })
+      
+      setMessage(res.data.message || "Signup successful!");
+      console.log("✅ Response:", res.data);
+    } catch (error) {console.error("❌ Error:", error.response?.data || error.message);
+      setMessage(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+    }finally{
+      setLoading(false);
+    }
+
+  }
+
   return (
     <div 
       className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 sm:px-6"
@@ -20,14 +63,18 @@ const Login = () => {
         </div>
 
         {/* Form */}
-        <form className="space-y-4">
+        <form  onSubmit={handleSignIn} className="space-y-4">
           {/* Email */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email</label>
             <input 
-              type="email" 
-              placeholder="johndoe@example.com" 
+             type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="johndoe@example.com"
               className="border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 focus:ring-green-600"
+              required
             />
           </div>
 
@@ -35,9 +82,13 @@ const Login = () => {
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
             <input 
-              type="password" 
-              placeholder="••••••••" 
+             type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
               className="border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 focus:ring-green-600"
+              required
             />
           </div>
 
@@ -50,12 +101,27 @@ const Login = () => {
             <a href="#" className="text-[#11860F] font-medium">Forgot password</a>
           </div>
 
-          {/* Sign In Button */}
-          <button 
-            type="submit" 
-            className="w-full bg-[#11860F] text-white py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-[#0c670b] transition-colors"
+            {/* Message */}
+          {message && (
+            <p
+              className={`text-sm text-center ${
+                message.toLowerCase().includes("success")
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {message}
+            </p>
+          )}
+
+
+ {/* Sign In Button */}
+          <button
+            type="submit"
+            className="w-full bg-[#11860F] text-white py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-[#0c670b] transition-colors disabled:opacity-50"
+            disabled={loading}
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           {/* Create account link */}

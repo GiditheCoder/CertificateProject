@@ -1,7 +1,13 @@
 import React from 'react'; 
 import AboutImage from '../images/AboutImage.png';
+import { useNavigate } from 'react-router-dom';
 
 const About = () => {
+  const navigate = useNavigate();
+
+   const handleSignUpScreen = () => {
+    navigate('/signup')
+  }
   return (
     <section
       className="relative bg-cover bg-center bg-no-repeat min-h-[400px] flex items-center"
@@ -26,7 +32,7 @@ const About = () => {
 
         {/* CTA Button */}
         <div className="flex justify-center sm:justify-start">
-          <button className="bg-white text-green-700 font-semibold px-5 sm:px-6 md:px-8 py-2 sm:py-3 rounded-md shadow hover:bg-green-50 transition-all text-sm sm:text-base">
+          <button className="bg-white text-green-700 font-semibold px-5 sm:px-6 md:px-8 py-2 sm:py-3 rounded-md shadow hover:bg-green-50 transition-all text-sm sm:text-base" onClick={handleSignUpScreen}>
             Get started
           </button>
         </div>
