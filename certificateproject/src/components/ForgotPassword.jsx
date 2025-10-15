@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Bg from "../images/Bg.png";
+import { Link, useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+   const navigate = useNavigate();
+
+     const handleLoginRedirect = () => {
+    navigate("/login");
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +75,8 @@ const ForgotPassword = () => {
           <a
             href="/login"
             className="flex items-center justify-center font-medium text-[#475467] text-sm hover:underline"
-          >
+          
+            onClick={handleLoginRedirect}>
             ← Back to Login
           </a>
         </div>

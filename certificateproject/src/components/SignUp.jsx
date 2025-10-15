@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import StateLogo from "../images/StateLogo.png";
 import Bg from "../images/Bg.png";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   //  State to store user input
@@ -15,8 +16,14 @@ const SignUp = () => {
     confirmPassword: "",
   });
 
+   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+
+  const handleLoginRedirect = () => {
+    navigate("/login");
+  }
 
   // 🔁 Update input fields
   const handleChange = (e) => {
@@ -210,7 +217,8 @@ const SignUp = () => {
           {/* Login Link */}
           <p className="text-center text-sm text-gray-500 mt-4">
             Already have an account?{" "}
-            <a href="/login" className="text-green-700 font-medium">
+            <a className="text-green-700 font-medium"
+            onClick={handleLoginRedirect}>
               Log in
             </a>
           </p>
