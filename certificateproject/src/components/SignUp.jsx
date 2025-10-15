@@ -217,7 +217,7 @@ const SignUp = () => {
           {/* Login Link */}
           <p className="text-center text-sm text-gray-500 mt-4">
             Already have an account?{" "}
-            <a className="text-green-700 font-medium"
+            <a className="text-green-700 font-medium cursor-pointer"
             onClick={handleLoginRedirect}>
               Log in
             </a>
