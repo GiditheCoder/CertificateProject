@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './components/Home'
 import SignUp from './components/SignUp'
 import Login from './components/Login'
+import ForgotPassword from './components/ForgotPassword'
+import Dashboard from './components/Dashboard'
+import Application from './components/Application'
 import './index.css'
 
 const App = () => {
@@ -16,6 +19,12 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         {/* Login page */}
         <Route path="/login" element={<Login />} />
+        {/* Forgot Password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        {/* dashboard */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Application page */}
+        <Route path="/application" element={<Application />} />
       </Routes>
     </Router>
   )
