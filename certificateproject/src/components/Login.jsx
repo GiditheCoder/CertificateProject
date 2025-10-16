@@ -29,6 +29,14 @@ const Login = () => {
     navigate("/forgot-password");
   };
 
+  const handleSignUp = () => {
+    navigate("/signup");
+  };
+
+  const handleHomeRedirect = () => {
+    navigate("/");
+  }
+
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -156,7 +164,7 @@ const Login = () => {
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full bg-[#11860F] text-white py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-[#0c670b] transition-colors disabled:opacity-50"
+            className="w-full bg-[#11860F] text-white font-semibold py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-[#0c670b] transition-colors disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "Signing in..." : "Sign in"}
@@ -165,20 +173,23 @@ const Login = () => {
           {/* Create account link */}
           <p className="text-center text-xs sm:text-sm text-gray-500">
             Don’t have an account?{" "}
-            <Link to="/signup" className="text-green-700 font-medium">
-              Create account
-            </Link>
+          <span className="text-green-700 font-medium cursor-pointer"
+          onClick={handleSignUp}>
+   Create account
+          </span>
+            
+          
           </p>
         </form>
 
         {/* Back to home */}
         <div className="mt-6 flex justify-center">
-          <Link
-            to="/"
-            className="flex items-center text-xs sm:text-sm text-gray-600 hover:text-green-700"
+          <p
+            onClick={handleHomeRedirect}
+            className="flex items-center cursor-pointer text-xs sm:text-sm text-gray-600 hover:text-green-700"
           >
             <span className="mr-2">←</span> Back to home
-          </Link>
+          </p>
         </div>
       </div>
     </div>

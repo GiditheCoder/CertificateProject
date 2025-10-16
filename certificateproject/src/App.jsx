@@ -6,6 +6,7 @@ import Login from './components/Login'
 import ForgotPassword from './components/ForgotPassword'
 import Dashboard from './components/Dashboard'
 import Application from './components/Application'
+import Successful from './components/Successful'
 import './index.css'
 
 const App = () => {
@@ -25,6 +26,8 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         {/* Application page */}
         <Route path="/application" element={<Application />} />
+        {/* Successful payment page */}
+        <Route path="/successful" element={<Successful />} />
       </Routes>
     </Router>
   )

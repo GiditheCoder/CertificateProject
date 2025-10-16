@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Settings, Bell, Upload } from 'lucide-react';
 import Bg from '../images/Bg.png';
 import StateLogo from "../images/StateLogo.png";
+import { useNavigate } from 'react-router-dom';
 
 const Application = () => {
   const [applicationType, setApplicationType] = useState('myself');
@@ -26,6 +27,12 @@ const Application = () => {
     e.preventDefault();
     console.log('Form submitted:', formData);
   };
+
+  const navigate = useNavigate();
+
+  const handleDashboard = () => {
+    navigate('/dashboard');
+  }
 
   return (
     <div 
@@ -55,7 +62,8 @@ const Application = () => {
 
       {/* Main Content */}
   {/* Back Button */}
-        <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mt-6 ml-6 transition-colors">
+        <button className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-gray-900 mt-6 ml-6 transition-colors"
+        onClick={handleDashboard}>
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm font-medium">Back</span>
         </button>
@@ -163,19 +171,7 @@ const Application = () => {
                 </select>
               </div>
               
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Birth
-                </label>
-                <input
-                  type="text"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleInputChange}
-                  placeholder="dd/mm/yy"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div> */}
+            
 
               <div>
   <label className="block text-sm font-medium text-gray-700 mb-2">

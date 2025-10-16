@@ -8,6 +8,7 @@ import StateLogo from "../images/StateLogo.png"
 import MenuLogo from "../images/menu.png"
 import CloseLogo from "../images/close.png"
 import { useNavigate } from 'react-router-dom'
+import { motion } from "framer-motion";
 
 const Start = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Start = () => {
   const handleLogInScreen = () => {
     navigate('/login')
   }
+
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-white">
@@ -83,8 +85,8 @@ const Start = () => {
       <div className="flex flex-col xl:flex-row flex-1 px-4 sm:px-8 lg:px-12 py-6 lg:py-10 gap-8 xl:gap-0">
         {/* Left side */}
         <div className="flex-1 flex flex-col justify-center items-center xl:items-start text-center xl:text-left">
-          <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm mb-3">
-            <span className='bg-white text-green-700 px-2 py-0.5 rounded-full font-bold'>
+          <span className="bg-[#E3F2E7] text-green-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm mb-3">
+            <span className='bg-white text-[#11860F]  px-2 py-0.5 rounded-full font-bold'>
               New!
             </span> 
             <span className='font-bold ml-1'>
@@ -106,12 +108,12 @@ const Start = () => {
           {/* Action Buttons — NEW approach: inline-flex + max-w on mobile so they stay compact */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6 justify-center xl:justify-start items-center">
             <button
-              onClick={() => {}}
               className="inline-flex items-center justify-center bg-white text-black border border-[#D0D5DD] font-semibold rounded-lg shadow hover:bg-gray-50 transition-all
                 text-xs sm:text-sm md:text-base
                 px-3 sm:px-4 md:px-6
                 py-1 sm:py-2 md:py-3
                 max-w-[200px] sm:max-w-none w-auto"
+              onClick={handleSignUpScreen}
             >
               Apply for Certificate
             </button>
@@ -145,34 +147,59 @@ const Start = () => {
             className="w-[70%] sm:w-[60%] xl:w-[55%] absolute z-10"
           />
 
+
           {/* Floating Cards */}
           <div className="absolute top-[5%] left-[5%] sm:left-[10%] xl:left-[15%] z-20">
-            <img 
+            {/* <img 
               src={GovernmentApproved} 
               alt="100% Government Approved" 
               className="w-32 sm:w-40 xl:w-48 h-auto drop-shadow-lg hover:scale-105 transition-transform"
-            />
+            /> */}
+            <motion.img
+  src={GovernmentApproved}
+  alt="100% Government Approved"
+  className="w-32 sm:w-40 xl:w-48 h-auto drop-shadow-lg"
+  animate={{ y: [0, -15, 0] }}
+  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+/>
           </div>
 
           <div className="absolute top-[5%] right-[5%] sm:right-[8%] xl:right-[10%] z-20">
-            <img 
+            {/* <img 
               src={DigitalApplication} 
               alt="Digital Applications" 
               className="w-36 sm:w-44 xl:w-52 h-auto drop-shadow-lg hover:scale-105 transition-transform"
-            />
+            /> */}
+            <motion.img
+  src={DigitalApplication}
+  alt="Digital Applications"
+  className="w-36 sm:w-44 xl:w-52 h-auto drop-shadow-lg"
+  animate={{ y: [0, -10, 0] }}
+  transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+/>
           </div>
 
           <div className="absolute bottom-[5%] left-1/2 transform -translate-x-1/2 z-20">
-            <img 
+            {/* <img 
               src={Speed} 
               alt="Fast Processing Speed" 
               className="w-32 sm:w-40 xl:w-44 h-auto drop-shadow-lg hover:scale-105 transition-transform"
-            />
+            /> */}
+            <motion.img
+  src={Speed}
+  alt="Fast Processing Speed"
+  className="w-32 sm:w-40 xl:w-44 h-auto drop-shadow-lg"
+  animate={{ y: [0, -12, 0] }}
+  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+/>
           </div>
         </div>
       </div>
+      
     </div>
+    
   )
+  
 }
 
 export default Start

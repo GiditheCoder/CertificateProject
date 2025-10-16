@@ -17,7 +17,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     try {
       // Example backend request (replace URL with your API endpoint)
-      const res = await axios.post("https://your-backend.com/api/forgot-password", { email });
+      const res = await axios.post("https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/forgot-password", { email });
       setMessage("Password reset link sent to your email.");
     } catch (error) {
       setMessage("Error sending reset link. Please try again.");

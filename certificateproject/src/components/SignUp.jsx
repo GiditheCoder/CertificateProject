@@ -208,7 +208,7 @@ const SignUp = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#11860F] text-white py-3 rounded-md hover:bg-[#0c670b] transition-colors"
+            className="w-full bg-[#11860F] text-white font-semibold py-3 rounded-md hover:bg-[#0c670b] transition-colors"
             disabled={loading}
           >
             {loading ? "Creating Account..." : "Get started"}
@@ -217,7 +217,7 @@ const SignUp = () => {
           {/* Login Link */}
           <p className="text-center text-sm text-gray-500 mt-4">
             Already have an account?{" "}
-            <a className="text-green-700 font-medium cursor-pointer"
+            <a className="text-[#11860F] font-medium cursor-pointer"
             onClick={handleLoginRedirect}>
               Log in
             </a>

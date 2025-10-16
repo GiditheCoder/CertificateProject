@@ -34,14 +34,14 @@ export default function Process() {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-4">
-            <span className="bg-green-100 text-[#11860F] text-sm font-medium px-4 py-2 rounded-full">
+            <span className="bg-[#E3F2E7] text-[#11860F] text-sm font-semibold px-4 py-2 rounded-full">
               How to apply
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Simple Application Process
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600">
+          <p className="text-base sm:text-lg md:text-xl text-[#475467] font-medium">
             Follow these four (4) simple steps to obtain your L.G.A certificates
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function Process() {
             >
               {/* Step Number Badge */}
               <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 
-                              bg-white text-[#11860F] border border-[#e8ede8] rounded-xl 
+                              bg-white text-[#11860F] border border-[#d3d6d3] rounded-xl 
                               font-bold text-xl sm:text-2xl mb-6 shadow-md shadow-green-100/60 
                               group-hover:shadow-lg group-hover:shadow-green-300/50 
                               transition-all duration-300">
