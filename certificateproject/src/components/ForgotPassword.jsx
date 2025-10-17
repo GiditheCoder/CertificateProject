@@ -73,7 +73,7 @@ const ForgotPassword = () => {
         {/* Back to login */}
         <div className="mt-6">
           <a
-            className="flex items-center justify-center font-medium text-[#475467] text-sm hover:underline"
+            className="flex items-center justify-center cursor-pointer font-medium text-[#475467] text-sm hover:underline"
             onClick={handleLoginRedirect}>
             ← Back to Login
           </a>
