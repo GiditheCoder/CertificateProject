@@ -42,31 +42,70 @@ const Login = () => {
     setLoading(true);
     setMessage("");
 
-    try {
-      const res = await axios.post(
-        "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
 
-      setMessage(res.data.message || "Signup successful!");
-      console.log("✅ Response:", res.data);
-        // ✅ Wait a moment, then redirect
+  //       "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
+  //       {
+  //         email: formData.email,
+  //         password: formData.password,
+  //       }
+  //     );
+
+  //       if (res.data.success) {
+  //     const { token, userObj } = res.data.data;
+
+  //     // ✅ Save both token and user info
+  //     localStorage.setItem("token", token);
+  //     localStorage.setItem("user", JSON.stringify(userObj));
+
+  //     setMessage(res.data.message || "Signup successful!");
+  //     console.log("✅ Response:", res.data);
+  //       // ✅ Wait a moment, then redirect
+  //   setTimeout(() => {
+  //     navigate("/dashboard"); // 👈 redirect to dashboard
+  //   }, 1000);
+  //   } catch (error) {
+  //     console.error("❌ Error:", error.response?.data || error.message);
+  //     setMessage(
+  //       error.response?.data?.message || "Login failed. Please try again."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+try {
+  const res = await axios.post(
+    "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
+    {
+      email: formData.email,
+      password: formData.password,
+    }
+  );
+
+  if (res.data.success) {
+    const { token, userObj } = res.data.data;
+
+    // ✅ Save both token and user info
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userObj));
+
+    setMessage(res.data.message || "Login successful!");
+    console.log("✅ Response:", res.data);
+
+    // ✅ Wait a moment, then redirect
     setTimeout(() => {
       navigate("/dashboard"); // 👈 redirect to dashboard
     }, 1000);
-    } catch (error) {
-      console.error("❌ Error:", error.response?.data || error.message);
-      setMessage(
-        error.response?.data?.message || "Login failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }
+} catch (error) {
+  console.error("❌ Error:", error.response?.data || error.message);
+  setMessage(
+    error.response?.data?.message || "Login failed. Please try again."
+  );
+} finally {
+  setLoading(false);
+}
 
+  };
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 sm:px-6"
@@ -197,3 +236,8 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+  //   try {
+  //     const res = await axios.post(

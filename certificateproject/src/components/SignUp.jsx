@@ -3,9 +3,9 @@ import axios from "axios";
 import StateLogo from "../images/StateLogo.png";
 import Bg from "../images/Bg.png";
 import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react"; // 👈 Lucide icons
 
 const SignUp = () => {
-  //  State to store user input
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -16,14 +16,15 @@ const SignUp = () => {
     confirmPassword: "",
   });
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false); // 👁️ toggle for password
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // 👁️ toggle for confirm password
 
   const handleLoginRedirect = () => {
     navigate("/login");
-  }
+  };
 
   // 🔁 Update input fields
   const handleChange = (e) => {
@@ -31,11 +32,37 @@ const SignUp = () => {
   };
 
   // 🚀 Handle form submission
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setMessage("");
+
+  //   if (formData.password !== formData.confirmPassword) {
+  //     return setMessage("Passwords do not match.");
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     const res = await axios.post(
+  //       "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/signup",
+  //       formData
+  //     );
+
+  //     setMessage(res.data.message || "Signup successful!");
+  //     console.log("✅ Response:", res.data);
+  //   } catch (err) {
+  //     console.error("❌ Error:", err.response?.data || err.message);
+  //     setMessage(
+  //       err.response?.data?.message || "Something went wrong. Please try again."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       return setMessage("Passwords do not match.");
     }
@@ -45,19 +72,16 @@ const SignUp = () => {
     try {
       const res = await axios.post(
         "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/signup",
-        {
-          firstName: formData.firstName,
-          middleName: formData.middleName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        }
+        formData
       );
 
       setMessage(res.data.message || "Signup successful!");
       console.log("✅ Response:", res.data);
+
+      // ✅ Redirect to login after success
+      setTimeout(() => {
+        navigate("/login");
+      }, 500); // waits 2 seconds before redirecting
     } catch (err) {
       console.error("❌ Error:", err.response?.data || err.message);
       setMessage(
@@ -67,6 +91,7 @@ const SignUp = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div
@@ -87,7 +112,7 @@ const SignUp = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* First, Middle, and Last Name */}
+          {/* Name Fields */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -166,46 +191,65 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Passwords */}
+          {/* Password Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            {/* Password */}
+            <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Create a strong password"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600 pr-10"
                 required
               />
+              <div
+                className="absolute right-3 top-11 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </div>
             </div>
-            <div>
+
+            {/* Confirm Password */}
+            <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm Password
               </label>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm password"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
+                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600 pr-10"
                 required
               />
+              <div
+                className="absolute right-3 top-11 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+              >
+                {showConfirmPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </div>
             </div>
           </div>
 
           <p className="text-xs text-gray-500">Must be at least 8 characters</p>
 
-          {/* Status Message */}
           {message && (
             <p className="text-sm text-center mt-2 text-gray-700">{message}</p>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-[#11860F] text-white font-semibold py-3 rounded-md hover:bg-[#0c670b] transition-colors"
@@ -214,11 +258,12 @@ const SignUp = () => {
             {loading ? "Creating Account..." : "Get started"}
           </button>
 
-          {/* Login Link */}
           <p className="text-center text-sm text-gray-500 mt-4">
             Already have an account?{" "}
-            <a className="text-[#11860F] font-medium cursor-pointer"
-            onClick={handleLoginRedirect}>
+            <a
+              className="text-[#11860F] font-medium cursor-pointer"
+              onClick={handleLoginRedirect}
+            >
               Log in
             </a>
           </p>
