@@ -1,252 +1,388 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Settings, Bell, Upload } from 'lucide-react';
-import Bg from '../images/Bg.png';
+import React, { useState, useRef, useEffect } from "react";
+import { ArrowLeft, Settings, Bell, LogOutIcon } from "lucide-react";
+import Bg from "../images/Bg.png";
 import StateLogo from "../images/StateLogo.png";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import CloseLogo from "../images/close.png";
+import MenuLogo from "../images/menu.png";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const Application = () => {
-  const [applicationType, setApplicationType] = useState('myself');
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const [user, setUser] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
-    certificateType: '',
-    fullName: '',
-    placeOfBirth: '',
-    gender: '',
-    dateOfBirth: '',
-    purpose: ''
+    fullNames: "",
+    fatherNames: "",
+    motherNames: "",
+    nativeTown: "",
+    nativePoliticalWard: "",
+    village: "",
+    communityHead: "",
+    currentAddress: "",
+    lga: "",
+    nin: "",
+    passport: null,
   });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); // clear error when typing
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-  };
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       const base64Image = reader.result;
+  //       setFormData((prev) => ({ ...prev, passport: base64Image }));
+  //       setErrors((prev) => ({ ...prev, passport: "" }));
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
-  const navigate = useNavigate();
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    // ✅ Check file size (max 3MB)
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    if (file.size > maxSize) {
+      setErrors((prev) => ({
+        ...prev,
+        passport: "File too large. Maximum size is 3MB.",
+      }));
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    // ✅ If file is okay, convert to base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Image = reader.result;
+      setFormData((prev) => ({ ...prev, passport: base64Image }));
+      setErrors((prev) => ({ ...prev, passport: "" }));
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 
   const handleDashboard = () => {
-    navigate('/dashboard');
+    navigate("/dashboard");
+  };
+
+    // ✅ Proper logout function
+  const handleLogout = () => {
+    // Clear local storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // Redirect to login
+    navigate("/login");
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const newErrors = {};
+  
+
+  // ✅ Basic required fields
+  if (!formData.fullNames?.trim()) newErrors.fullNames = "Required";
+  if (!formData.fatherNames?.trim()) newErrors.fatherNames = "Required";
+  if (!formData.motherNames?.trim()) newErrors.motherNames = "Required";
+  if (!formData.nativeTown?.trim()) newErrors.nativeTown = "Required";
+  if (!formData.nativePoliticalWard?.trim())
+    newErrors.nativePoliticalWard = "Required";
+  if (!formData.village?.trim()) newErrors.village = "Required";
+  if (!formData.communityHead?.trim()) newErrors.communityHead = "Required";
+  if (!formData.currentAddress?.trim()) newErrors.currentAddress = "Required";
+  if (!formData.lga?.trim()) newErrors.lga = "Required";
+  if (!formData.nin?.trim()) {
+    newErrors.nin = "Required";
+  } else if (!/^\d{11}$/.test(formData.nin)) {
+    // ✅ NIN must be exactly 11 digits (numbers only)
+    newErrors.nin = "NIN must be exactly 11 digits";
+  }
+  if (!formData.passport) newErrors.passport = "Required";
+
+  // Stop if errors exist
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
   }
 
+  
+  setLoading(true); // ✅ Start loading
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+     toast.error("⚠️ Please log in again.", { position: "top-center" });
+      navigate("/login");
+      return;
+    }
+
+    // ✅ Submit to backend
+    const res = await axios.post(
+      "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/application",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("✅ Response:", res.data);
+
+    // ✅ Handle success & redirect to payment
+    if (res.data.success && res.data.data?.paymentLink) {
+    // Success
+toast.success("✅ Application submitted! Redirecting to payment...");
+      window.location.href = res.data.data.paymentLink;
+    } else {
+      alert(res.data.message || "Something went wrong.");
+    }
+
+  } catch (error) {
+    console.error("❌ Error submitting application:", error);
+    toast.error("❌ Failed to submit application. Please try again.");
+  }finally{
+     setLoading(false); // ✅ Stop loading
+  }
+};
+
   return (
-    <div 
+    <div
       className="min-h-screen bg-cover bg-center"
       style={{ backgroundImage: `url(${Bg})` }}
     >
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={StateLogo} alt="State Logo" className="w-10 h-10" />
-            <h1 className="text-lg font-semibold text-gray-800">Ogun State Government</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Settings className="w-5 h-5 text-gray-600" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Bell className="w-5 h-5 text-gray-600" />
-            </button>
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-sm font-semibold text-gray-600">JD</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Header omitted for brevity */}
+        {/* Top Navbar */}
+            <header className="flex items-center justify-between px-6 sm:px-8 py-4 bg-white shadow-sm relative">
+              {/* Left Section */}
+              <div className="flex items-center gap-3">
+                <img src={StateLogo} alt="State Logo" className="w-10 h-10" />
+                <h1 className="text-base sm:text-lg font-semibold text-[#475467]">
+                  Ogun State Government
+                </h1>
+              </div>
+      
+              {/* Desktop Icons */}
+              <div className="hidden md:flex items-center gap-5">
+                <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
+                <LogOutIcon onClick={handleLogout} className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold uppercase">
+                  {user
+                    ? `${user.firstName?.charAt(0).toUpperCase()}${user.lastName?.charAt(0).toUpperCase()}`
+                    : "?"}
+                </div>
+              </div>
+      
+              {/* Mobile Menu Toggle */}
+              <div className="md:hidden flex items-center">
+                <button onClick={() => setMenuOpen(!menuOpen)}>
+                  <img
+                    src={menuOpen ? CloseLogo : MenuLogo}
+                    alt="menu toggle"
+                    className="w-6 h-6"
+                  />
+                </button>
+              </div>
+      
+              {/* Mobile Dropdown Menu */}
+              {menuOpen && (
+                <div className="absolute top-full right-4 bg-white border border-gray-200 rounded-lg shadow-lg mt-2 p-4 flex flex-col items-center gap-4 w-40 z-50 md:hidden animate-fadeIn">
+                  <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
+                  <LogOutIcon onClick={handleLogout} className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold uppercase">
+                    {user
+                      ? `${user.firstName?.charAt(0).toUpperCase()}${user.lastName?.charAt(0).toUpperCase()}`
+                      : "?"}
+                  </div>
+                </div>
+              )}
+            </header>
 
-      {/* Main Content */}
-  {/* Back Button */}
-        <button className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-gray-900 mt-6 ml-6 transition-colors"
-        onClick={handleDashboard}>
-          <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">Back</span>
-        </button>
+      {/* Back Button */}
+      <button
+        onClick={handleDashboard}
+        className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-gray-900 mt-6 mx-auto sm:ml-6 transition-colors justify-center"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="text-sm font-medium">Back</span>
+      </button>
 
-
+      {/* Form Section */}
       <div className="max-w-2xl mx-auto px-4 py-8">
-    
-        {/* Form Container */}
-        <div className=" p-6 sm:p-8">
-          {/* Title */}
+        <div className="p-6 sm:p-8 bg-white rounded-xl shadow-md">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Apply for Certificate</h2>
-            <p className="text-gray-600 text-sm">Complete the form below to submit your certificate application</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Apply for Certificate
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Fill in your personal details below to apply
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Radio Buttons */}
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="applicationType"
-                  value="myself"
-                  checked={applicationType === 'myself'}
-                  onChange={(e) => setApplicationType(e.target.value)}
-                  className="w-4 h-4 text-green-600 focus:ring-green-500"
-                />
-                <span className="text-sm font-medium text-green-700">For Myself</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="applicationType"
-                  value="child"
-                  checked={applicationType === 'child'}
-                  onChange={(e) => setApplicationType(e.target.value)}
-                  className="w-4 h-4 text-gray-400 focus:ring-gray-300"
-                />
-                <span className="text-sm font-medium text-gray-600">For My Child</span>
-              </label>
-            </div>
-
-            {/* Certificate Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Certificate Type
-              </label>
-              <select
-                name="certificateType"
-                value={formData.certificateType}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900"
-              >
-                <option value="">Select certificate type</option>
-                <option value="birth">Birth Certificate</option>
-                <option value="origin">Certificate of Origin</option>
-                <option value="residence">Certificate of Residence</option>
-              </select>
-            </div>
-
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name (as on NIN)
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                placeholder="John Oluwadare Doe"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Place of Birth */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Place of Birth
-              </label>
-              <input
-                type="text"
-                name="placeOfBirth"
-                value={formData.placeOfBirth}
-                onChange={handleInputChange}
-                placeholder="Abeokuta"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Gender and Date of Birth */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
+            {/* Text Fields */}
+            {[
+              { name: "fullNames", label: "Full Name", placeholder: "John Doe" },
+              { name: "fatherNames", label: "Father’s Name", placeholder: "Doe Monk" },
+              { name: "motherNames", label: "Mother’s Name", placeholder: "Doe Mara" },
+              { name: "nativeTown", label: "Native Town", placeholder: "Akute" },
+              { name: "nativePoliticalWard", label: "Native Political Ward", placeholder: "Akute Central Ward" },
+              { name: "village", label: "Village", placeholder: "Akute Village" },
+              { name: "communityHead", label: "Community Head", placeholder: "Mr Ajayi Isaac" },
+              { name: "currentAddress", label: "Current Address", placeholder: "No 2, Moon Street, Akute" },
+              { name: "lga", label: "LGA", placeholder: "Akute" },
+              { name: "nin", label: "NIN", placeholder: "2839293892" },
+            ].map((field) => (
+              <div key={field.name}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {field.label}
                 </label>
-                <select
-                  name="gender"
-                  value={formData.gender}
+                <input
+                  type="text"
+                  name={field.name}
+                  value={formData[field.name]}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
+                  placeholder={field.placeholder}
+                  className={`w-full px-4 py-2 rounded-lg focus:ring-2 focus:border-transparent ${
+                    errors[field.name]
+                      ? "border-red-600 focus:ring-red-600"
+                      : "border-gray-300 focus:ring-green-600"
+                  } border`}
+                />
+                {errors[field.name] && (
+                  <p className="text-xs text-red-600 mt-1">{errors[field.name]}</p>
+                )}
               </div>
-              
-            
+            ))}
 
-              <div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Date of Birth
-  </label>
-  <input
-  type="text"
-  name="dateOfBirth"
-  value={formData.dateOfBirth}
-  onChange={(e) => {
-    let value = e.target.value.replace(/\D/g, ""); // remove non-digits
-    if (value.length > 2) value = value.slice(0, 2) + "/" + value.slice(2);
-    if (value.length > 5) value = value.slice(0, 5) + "/" + value.slice(5, 7);
-    handleInputChange({
-      target: { name: "dateOfBirth", value: value.slice(0, 8) },
-    });
-  }}
-  placeholder="dd/mm/yy"
-  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-  inputMode="numeric"
-/>
-
-</div>
-
-
-            </div>
-
-            {/* File Upload */}
-            <div>
-              <div className="border-2 border-dashed border-gray-300 bg-transparent rounded-lg p-8 text-center hover:border-green-400 transition-colors cursor-pointer">
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                    <Upload className="w-6 h-6 text-green-600" />
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">
-                    <span className="text-green-600 font-medium">Click to upload</span> or drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    SVG, PNG, JPG or GIF (max. 800x400px)
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Purpose of Certificate */}
+            {/* Passport Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Purpose of Certificate
+                Passport Photograph
               </label>
-              <textarea
-                name="purpose"
-                value={formData.purpose}
-                onChange={handleInputChange}
-                placeholder="Briefly explain why you need this certificate (e.g., school application, visa application, etc.)"
-                rows="4"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
-              ></textarea>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className={`block w-full text-sm text-gray-700 border rounded-lg cursor-pointer focus:outline-none 
+                file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 
+                file:bg-green-600 file:text-white hover:file:bg-green-700
+                ${
+                  errors.passport
+                    ? "border-red-600 focus:ring-red-600"
+                    : "border-gray-300 focus:ring-green-600"
+                }`}
+              />
+              {errors.passport && (
+                <p className="text-xs text-red-600 mt-1">{errors.passport}</p>
+              )}
+
+              {formData.passport && (
+                <div className="relative inline-block mt-3">
+                  <img
+                    src={formData.passport}
+                    alt="Preview"
+                    className="w-24 h-24 object-cover rounded-lg border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, passport: null }));
+                      if (fileInputRef.current)
+                        fileInputRef.current.value = "";
+                    }}
+                    className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow hover:bg-gray-100"
+                  >
+                    <img src={CloseLogo} alt="Remove" className="w-3 h-3" />
+                  </button>
+                  
+                </div>
+
+              )}
+              <p className="text-xs text-gray-500 mt-1">Maximum file size: 3MB</p>
+
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-3 rounded-lg transition-colors"
-            >
-              Submit Application
-            </button>
+           <button
+  type="submit"
+  disabled={loading}
+  className={`w-full flex justify-center items-center gap-2 font-semibold py-3 rounded-lg transition-colors ${
+    loading
+      ? "bg-green-500 cursor-not-allowed text-white"
+      : "bg-green-700 hover:bg-green-800 text-white"
+  }`}
+>
+  {loading ? (
+    <>
+      <svg
+        className="w-5 h-5 animate-spin text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path>
+      </svg>
+      <span>Submitting...</span>
+    </>
+  ) : (
+    "Submit Application"
+  )}
+</button>
+
+
           </form>
         </div>
       </div>
-
-
-
-      
+        <ToastContainer
+      position="top-center"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      pauseOnHover
+      draggable
+      theme="colored"
+    />
     </div>
   );
 };
 
 export default Application;
+

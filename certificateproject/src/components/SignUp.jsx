@@ -3,7 +3,7 @@ import axios from "axios";
 import StateLogo from "../images/StateLogo.png";
 import Bg from "../images/Bg.png";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react"; // 👈 Lucide icons
+import { Eye, EyeOff } from "lucide-react";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -16,55 +16,39 @@ const SignUp = () => {
     confirmPassword: "",
   });
 
+  const [errors, setErrors] = useState({}); // 🔴 store field-specific errors
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👁️ toggle for password
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // 👁️ toggle for confirm password
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleLoginRedirect = () => {
-    navigate("/login");
-  };
-
-  // 🔁 Update input fields
+  // 🔁 Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // clear error when typing
   };
 
-  // 🚀 Handle form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setMessage("");
-
-  //   if (formData.password !== formData.confirmPassword) {
-  //     return setMessage("Passwords do not match.");
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     const res = await axios.post(
-  //       "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/signup",
-  //       formData
-  //     );
-
-  //     setMessage(res.data.message || "Signup successful!");
-  //     console.log("✅ Response:", res.data);
-  //   } catch (err) {
-  //     console.error("❌ Error:", err.response?.data || err.message);
-  //     setMessage(
-  //       err.response?.data?.message || "Something went wrong. Please try again."
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-    const handleSubmit = async (e) => {
+  // ✅ Handle submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    const newErrors = {};
 
-    if (formData.password !== formData.confirmPassword) {
-      return setMessage("Passwords do not match.");
+    // Simple validation
+    if (!formData.firstName.trim()) newErrors.firstName = "Required";
+     if (!formData.middleName.trim()) newErrors.middleName = "Required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Required";
+    if (!formData.email.trim()) newErrors.email = "Required";
+    if (!formData.phone.trim()) newErrors.phone = "Required";
+     if (!formData.password.trim()) newErrors.password = "Required";
+      if (!formData.confirmPassword.trim()) newErrors.confirmPassword = "Required";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
     setLoading(true);
@@ -78,10 +62,9 @@ const SignUp = () => {
       setMessage(res.data.message || "Signup successful!");
       console.log("✅ Response:", res.data);
 
-      // ✅ Redirect to login after success
       setTimeout(() => {
         navigate("/login");
-      }, 500); // waits 2 seconds before redirecting
+      }, 1000);
     } catch (err) {
       console.error("❌ Error:", err.response?.data || err.message);
       setMessage(
@@ -92,14 +75,12 @@ const SignUp = () => {
     }
   };
 
-
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
       style={{ backgroundImage: `url(${Bg})` }}
     >
       <div className="bg-white w-full max-w-md md:max-w-2xl rounded-lg shadow-md p-8">
-        {/* Logo + Heading */}
         <div className="flex flex-col items-center text-center mb-6">
           <img src={StateLogo} alt="State Logo" className="w-16 h-16 mb-3" />
           <h2 className="text-lg font-semibold text-gray-800">
@@ -110,53 +91,37 @@ const SignUp = () => {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Fields */}
+          {/* First/Last Names */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                First Name
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder="John"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Middle Name
-              </label>
-              <input
-                type="text"
-                name="middleName"
-                value={formData.middleName}
-                onChange={handleChange}
-                placeholder="Michael"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Last Name
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Doe"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
-                required
-              />
-            </div>
+            {["firstName", "middleName", "lastName"].map((field) => (
+              <div key={field}>
+                <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+                  {field.replace(/([A-Z])/g, " $1")}
+                </label>
+                <input
+                  type="text"
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  placeholder={
+                    field === "firstName"
+                      ? "John"
+                      : field === "middleName"
+                      ? "Michael"
+                      : "Doe"
+                  }
+                  className={`border rounded-md px-3 py-2 w-full focus:ring-1 ${
+                    errors[field]
+                      ? "border-red-600 focus:ring-red-600"
+                      : "border-gray-300 focus:ring-green-600"
+                  }`}
+                />
+                {errors[field] && (
+                  <p className="text-xs text-red-600 mt-1">{errors[field]}</p>
+                )}
+              </div>
+            ))}
           </div>
 
           {/* Email */}
@@ -170,9 +135,15 @@ const SignUp = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="johndoe@example.com"
-              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
-              required
+              className={`border rounded-md px-3 py-2 w-full focus:ring-1 ${
+                errors.email
+                  ? "border-red-600 focus:ring-red-600"
+                  : "border-gray-300 focus:ring-green-600"
+              }`}
             />
+            {errors.email && (
+              <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+            )}
           </div>
 
           {/* Phone */}
@@ -186,12 +157,18 @@ const SignUp = () => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="08123456789"
-              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600"
-              required
+              className={`border rounded-md px-3 py-2 w-full focus:ring-1 ${
+                errors.phone
+                  ? "border-red-600 focus:ring-red-600"
+                  : "border-gray-300 focus:ring-green-600"
+              }`}
             />
+            {errors.phone && (
+              <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+            )}
           </div>
 
-          {/* Password Fields */}
+          {/* Passwords */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Password */}
             <div className="relative">
@@ -204,8 +181,11 @@ const SignUp = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Create a strong password"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600 pr-10"
-                required
+                className={`border rounded-md px-3 py-2 w-full pr-10 focus:ring-1 ${
+                  errors.password
+                    ? "border-red-600 focus:ring-red-600"
+                    : "border-gray-300 focus:ring-green-600"
+                }`}
               />
               <div
                 className="absolute right-3 top-11 transform -translate-y-1/2 cursor-pointer text-gray-500"
@@ -226,8 +206,11 @@ const SignUp = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm password"
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-1 focus:ring-green-600 pr-10"
-                required
+                className={`border rounded-md px-3 py-2 w-full pr-10 focus:ring-1 ${
+                  errors.confirmPassword
+                    ? "border-red-600 focus:ring-red-600"
+                    : "border-gray-300 focus:ring-green-600"
+                }`}
               />
               <div
                 className="absolute right-3 top-11 transform -translate-y-1/2 cursor-pointer text-gray-500"
@@ -235,16 +218,15 @@ const SignUp = () => {
                   setShowConfirmPassword(!showConfirmPassword)
                 }
               >
-                {showConfirmPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </div>
+              {errors.confirmPassword && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.confirmPassword}
+                </p>
+              )}
             </div>
           </div>
-
-          <p className="text-xs text-gray-500">Must be at least 8 characters</p>
 
           {message && (
             <p className="text-sm text-center mt-2 text-gray-700">{message}</p>
@@ -262,7 +244,7 @@ const SignUp = () => {
             Already have an account?{" "}
             <a
               className="text-[#11860F] font-medium cursor-pointer"
-              onClick={handleLoginRedirect}
+              onClick={() => navigate("/login")}
             >
               Log in
             </a>
@@ -274,3 +256,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+

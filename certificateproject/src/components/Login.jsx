@@ -18,11 +18,13 @@ const Login = () => {
   // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+     setErrors({ ...errors, [e.target.name]: "" }); // clear error when typing
   };
 
   // Loading and messages
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleForgotPassword = () => {
@@ -37,75 +39,140 @@ const Login = () => {
     navigate("/");
   }
 
-  const handleSignIn = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+//   const handleSignIn = async (e) => {
+//     e.preventDefault();
+   
+//     setMessage("");
+//     const newErrors = {};
 
+//         // Simple validation
+//     if (!formData.email.trim()) newErrors.email = "Required";
+//      if (!formData.password.trim()) newErrors.password = "Required";
+    
+//      if (Object.keys(newErrors).length > 0) {
+//       setErrors(newErrors);
+//       return;
+//     }
 
-  //       "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
-  //       {
-  //         email: formData.email,
-  //         password: formData.password,
-  //       }
-  //     );
+//      setLoading(true);
 
-  //       if (res.data.success) {
-  //     const { token, userObj } = res.data.data;
+// try {
+//   const res = await axios.post(
+//     "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
+//     {
+//       email: formData.email,
+//       password: formData.password,
+//     }
+//   );
 
-  //     // ✅ Save both token and user info
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("user", JSON.stringify(userObj));
+//   if (res.data.success) {
+//     const { token, userObj } = res.data.data;
 
-  //     setMessage(res.data.message || "Signup successful!");
-  //     console.log("✅ Response:", res.data);
-  //       // ✅ Wait a moment, then redirect
-  //   setTimeout(() => {
-  //     navigate("/dashboard"); // 👈 redirect to dashboard
-  //   }, 1000);
-  //   } catch (error) {
-  //     console.error("❌ Error:", error.response?.data || error.message);
-  //     setMessage(
-  //       error.response?.data?.message || "Login failed. Please try again."
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-try {
-  const res = await axios.post(
-    "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
-    {
-      email: formData.email,
-      password: formData.password,
-    }
-  );
+//     // ✅ Save both token and user info
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("user", JSON.stringify(userObj));
 
-  if (res.data.success) {
-    const { token, userObj } = res.data.data;
+//     setMessage(res.data.message || "Login successful!");
+//     console.log("✅ Response:", res.data);
 
-    // ✅ Save both token and user info
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userObj));
+//     // ✅ Wait a moment, then redirect
+//     setTimeout(() => {
+//       navigate("/dashboard"); // 👈 redirect to dashboard
+//     }, 1000);
+//   }
+// }   if (errorMsg.includes("email")) {
+//     newErrors.email =
+//       error.response?.data?.message || "Invalid email address.";
+//   } else if (errorMsg.includes("password")) {
+//     newErrors.password =
+//       error.response?.data?.message || "Incorrect password.";
+//   } else if (errorMsg.includes("credential")) {
+//     newErrors.email = "Invalid email or password.";
+//     newErrors.password = "Invalid email or password.";
+//   } else {
+//     setMessage(error.response?.data?.message || "Login failed. Please try again.");
+//   }
 
-    setMessage(res.data.message || "Login successful!");
-    console.log("✅ Response:", res.data);
+//   setErrors(newErrors);
+// }
+//  finally {
+//   setLoading(false);
+// }
 
-    // ✅ Wait a moment, then redirect
-    setTimeout(() => {
-      navigate("/dashboard"); // 👈 redirect to dashboard
-    }, 1000);
+//   };
+
+const handleSignIn = async (e) => {
+  e.preventDefault();
+
+  setMessage("");
+  const newErrors = {};
+
+  // 🔹 Basic frontend validation
+  if (!formData.email.trim()) newErrors.email = "Required";
+  if (!formData.password.trim()) newErrors.password = "Required";
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
   }
-} catch (error) {
-  console.error("❌ Error:", error.response?.data || error.message);
-  setMessage(
-    error.response?.data?.message || "Login failed. Please try again."
-  );
-} finally {
-  setLoading(false);
-}
 
-  };
+  setLoading(true);
+
+  try {
+    const res = await axios.post(
+      "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
+      {
+        email: formData.email,
+        password: formData.password,
+      }
+    );
+
+    if (res.data.success) {
+      const { token, userObj } = res.data.data;
+
+      // ✅ Save both token and user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userObj));
+
+      setMessage(res.data.message || "Login successful!");
+      console.log("✅ Response:", res.data);
+
+      // ✅ Redirect after short delay
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    }
+  } catch (error) {
+    console.error("❌ Error:", error.response?.data || error.message);
+
+    const errorMsg =
+      error.response?.data?.message?.toLowerCase() ||
+      "login failed. please try again.";
+
+    const newErrors = {};
+
+    // 🎯 Detect where the problem is
+    if (errorMsg.includes("email")) {
+      newErrors.email =
+        error.response?.data?.message || "Invalid email address.";
+    } else if (errorMsg.includes("password")) {
+      newErrors.password =
+        error.response?.data?.message || "Incorrect password.";
+    } else if (errorMsg.includes("credential")) {
+      newErrors.email = "Invalid email or password.";
+      newErrors.password = "Invalid email or password.";
+    } else {
+      setMessage(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+    }
+
+    setErrors(newErrors);
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center px-4 sm:px-6"
@@ -130,47 +197,64 @@ try {
 
         {/* Form */}
         <form onSubmit={handleSignIn} className="space-y-4">
-          {/* Email */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="johndoe@example.com"
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 focus:ring-green-600"
-              required
-            />
-          </div>
+{/* Email Field */}
+<div>
+  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+    Email
+  </label>
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    placeholder="johndoe@example.com"
+    className={`rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 pr-10
+      ${errors.email
+        ? "border-2 border-red-500 focus:ring-red-500"
+        : "border border-gray-300 focus:ring-green-600"
+      }`}
+  />
+  {errors.email && (
+    <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+  )}
+</div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 focus:ring-green-600 pr-10"
-                required
-              />
-              {/* Eye toggle button */}
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
+{/* Password Field */}
+<div>
+  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+    Password
+  </label>
+  <div className="relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="••••••••"
+      className={`rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 pr-10
+        ${errors.password
+          ? "border-2 border-red-500 focus:ring-red-500"
+          : "border border-gray-300 focus:ring-green-600"
+        }`}
+    />
+    {errors.password && (
+      <p className="text-xs text-red-600 mt-1">{errors.password}</p>
+    )}
+
+    {/* Eye toggle button */}
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  </div>
+</div>
+
+
+
+
 
           {/* Remember + Forgot Password */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm gap-2">
@@ -236,8 +320,3 @@ try {
 };
 
 export default Login;
-
-
-
-  //   try {
-  //     const res = await axios.post(

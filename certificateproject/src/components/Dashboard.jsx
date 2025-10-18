@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Settings, Bell } from "lucide-react";
+import { Settings, Bell, LogOutIcon } from "lucide-react";
 import StateLogo from "../images/StateLogo.png";
 import box from "../images/box.png";
 import blob from "../images/blob.png";
@@ -27,6 +27,16 @@ const Dashboard = () => {
     navigate("/application");
   };
 
+   // ✅ Proper logout function
+  const handleLogout = () => {
+    // Clear local storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // Redirect to login
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navbar */}
@@ -42,7 +52,7 @@ const Dashboard = () => {
         {/* Desktop Icons */}
         <div className="hidden md:flex items-center gap-5">
           <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
-          <Settings className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
+          <LogOutIcon onClick={handleLogout} className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold uppercase">
             {user
               ? `${user.firstName?.charAt(0).toUpperCase()}${user.lastName?.charAt(0).toUpperCase()}`
@@ -65,7 +75,7 @@ const Dashboard = () => {
         {menuOpen && (
           <div className="absolute top-full right-4 bg-white border border-gray-200 rounded-lg shadow-lg mt-2 p-4 flex flex-col items-center gap-4 w-40 z-50 md:hidden animate-fadeIn">
             <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
-            <Settings className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
+            <LogOutIcon onClick={handleLogout} className="w-5 h-5 text-gray-600 cursor-pointer hover:text-[#11860F]" />
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-semibold uppercase">
               {user
                 ? `${user.firstName?.charAt(0).toUpperCase()}${user.lastName?.charAt(0).toUpperCase()}`
