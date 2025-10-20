@@ -39,67 +39,6 @@ const Login = () => {
     navigate("/");
   }
 
-//   const handleSignIn = async (e) => {
-//     e.preventDefault();
-   
-//     setMessage("");
-//     const newErrors = {};
-
-//         // Simple validation
-//     if (!formData.email.trim()) newErrors.email = "Required";
-//      if (!formData.password.trim()) newErrors.password = "Required";
-    
-//      if (Object.keys(newErrors).length > 0) {
-//       setErrors(newErrors);
-//       return;
-//     }
-
-//      setLoading(true);
-
-// try {
-//   const res = await axios.post(
-//     "https://lgacertificate-011d407b356b.herokuapp.com/api/v1/auth/login",
-//     {
-//       email: formData.email,
-//       password: formData.password,
-//     }
-//   );
-
-//   if (res.data.success) {
-//     const { token, userObj } = res.data.data;
-
-//     // ✅ Save both token and user info
-//     localStorage.setItem("token", token);
-//     localStorage.setItem("user", JSON.stringify(userObj));
-
-//     setMessage(res.data.message || "Login successful!");
-//     console.log("✅ Response:", res.data);
-
-//     // ✅ Wait a moment, then redirect
-//     setTimeout(() => {
-//       navigate("/dashboard"); // 👈 redirect to dashboard
-//     }, 1000);
-//   }
-// }   if (errorMsg.includes("email")) {
-//     newErrors.email =
-//       error.response?.data?.message || "Invalid email address.";
-//   } else if (errorMsg.includes("password")) {
-//     newErrors.password =
-//       error.response?.data?.message || "Incorrect password.";
-//   } else if (errorMsg.includes("credential")) {
-//     newErrors.email = "Invalid email or password.";
-//     newErrors.password = "Invalid email or password.";
-//   } else {
-//     setMessage(error.response?.data?.message || "Login failed. Please try again.");
-//   }
-
-//   setErrors(newErrors);
-// }
-//  finally {
-//   setLoading(false);
-// }
-
-//   };
 
 const handleSignIn = async (e) => {
   e.preventDefault();

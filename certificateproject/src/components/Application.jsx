@@ -47,19 +47,7 @@ const Application = () => {
     setErrors((prev) => ({ ...prev, [name]: "" })); // clear error when typing
   };
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       const base64Image = reader.result;
-  //       setFormData((prev) => ({ ...prev, passport: base64Image }));
-  //       setErrors((prev) => ({ ...prev, passport: "" }));
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
-
+//  this is the funtion that converts the file to base 64
   const handleFileChange = (e) => {
   const file = e.target.files[0];
   if (file) {

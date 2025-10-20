@@ -2,8 +2,15 @@ import React from 'react';
 import Success from "../images/check-mark.png";
 import Guard from "../images/guard.png";
 import Document from "../images/document.png";
+import { useNavigate } from 'react-router-dom';
 
 const Successful = () => {
+   const navigate = useNavigate();
+
+   const handleDashboardClick = () => {
+     navigate('/dashboard'); // Navigate to the dashboard route
+   }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-20">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
@@ -41,7 +48,9 @@ const Successful = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+          <button 
+          onClick={handleDashboardClick}
+          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
             Go to Dashboard
           </button>
           <button className="flex-1 bg-white hover:bg-gray-50 text-green-600 font-semibold py-3 px-6 rounded-lg border-2 border-green-600 transition-colors flex items-center justify-center gap-2">
