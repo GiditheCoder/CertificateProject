@@ -41,6 +41,31 @@ const Application = () => {
     }
   }, [navigate]);
 
+
+  const OGUN_LGAS = [
+  "Abeokuta North",
+  "Abeokuta South",
+  "Ewekoro",
+  "Ifo",
+  "Obafemi Owode",
+  "Odeda",
+  "Ijebu East",
+  "Ijebu North",
+  "Ijebu North East",
+  "Ijebu Ode",
+  "Ikenne",
+  "Odogbolu",
+  "Ogun Waterside",
+  "Remo North",
+  "Sagamu",
+  "Ado-Odo/Ota",
+  "Imeko Afon",
+  "Ipokia",
+  "Yewa North (Egbado North)",
+  "Yewa South (Egbado South)"
+];
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -242,7 +267,7 @@ toast.success("✅ Application submitted! Redirecting to payment...");
               { name: "village", label: "Village", placeholder: "Akute Village" },
               { name: "communityHead", label: "Community Head", placeholder: "Mr Ajayi Isaac" },
               { name: "currentAddress", label: "Current Address", placeholder: "No 2, Moon Street, Akute" },
-              { name: "lga", label: "LGA", placeholder: "Akute" },
+            
               { name: "nin", label: "NIN", placeholder: "2839293892" },
             ].map((field) => (
               <div key={field.name}>
@@ -266,6 +291,34 @@ toast.success("✅ Application submitted! Redirecting to payment...");
                 )}
               </div>
             ))}
+
+            {/* LGA Dropdown */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Local Government Area (LGA)
+  </label>
+  <select
+    name="lga"
+    value={formData.lga}
+    onChange={handleInputChange}
+    className={`w-full px-4 py-2 rounded-lg border focus:ring-2 focus:border-transparent ${
+      errors.lga
+        ? "border-red-600 focus:ring-red-600"
+        : "border-gray-300 focus:ring-green-600"
+    }`}
+  >
+    <option value="">Select your LGA</option>
+    {OGUN_LGAS.map((lga) => (
+      <option key={lga} value={lga}>
+        {lga}
+      </option>
+    ))}
+  </select>
+  {errors.lga && (
+    <p className="text-xs text-red-600 mt-1">{errors.lga}</p>
+  )}
+</div>
+
 
             {/* Passport Upload */}
             <div>

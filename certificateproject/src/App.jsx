@@ -8,6 +8,8 @@ import Dashboard from './components/Dashboard'
 import Application from './components/Application'
 import Successful from './components/Successful'
 import ResetPassword from './components/ResetPassword'
+import Role from './components/Role'
+import OfficialRegister from './components/OfficialRegister'
 import './index.css'
 
 const App = () => {
@@ -31,6 +33,10 @@ const App = () => {
         <Route path="/successful" element={<Successful />} />
          {/* Reset Password */}
         <Route path="/resetpassword" element={<ResetPassword />} />
+        {/* Role Selection */}
+        <Route path="/role" element={<Role />} />
+        {/* Official Register */}
+        <Route path='/official' element={<OfficialRegister/>} />
       </Routes>
     </Router>
   )

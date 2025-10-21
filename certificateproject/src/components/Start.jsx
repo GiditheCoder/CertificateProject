@@ -19,7 +19,7 @@ const Start = () => {
   }
   
   const handleLogInScreen = () => {
-    navigate('/login')
+    navigate('/role')
   }
 
 
