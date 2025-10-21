@@ -128,8 +128,8 @@ const handleSignIn = async (e) => {
           <h2 className="text-base sm:text-lg font-semibold text-gray-800">
             Ogun State Government
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">Welcome Back</p>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-xs sm:text-sm font-medium text-gray-500">Welcome Back</p>
+          <p className="text-xs sm:text-sm font-medium text-gray-500">
             Sign in to your LGA Certificate account
           </p>
         </div>
@@ -147,7 +147,7 @@ const handleSignIn = async (e) => {
     value={formData.email}
     onChange={handleChange}
     placeholder="johndoe@example.com"
-    className={`rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 pr-10
+    className={`rounded-md px-3 py-2 text-sm sm:text-base font-medium w-full focus:outline-none focus:ring-1 pr-10
       ${errors.email
         ? "border-2 border-red-500 focus:ring-red-500"
         : "border border-gray-300 focus:ring-green-600"
@@ -170,7 +170,7 @@ const handleSignIn = async (e) => {
       value={formData.password}
       onChange={handleChange}
       placeholder="••••••••"
-      className={`rounded-md px-3 py-2 text-sm sm:text-base w-full focus:outline-none focus:ring-1 pr-10
+      className={`rounded-md px-3 py-2 text-sm sm:text-base font-medium w-full focus:outline-none focus:ring-1 pr-10
         ${errors.password
           ? "border-2 border-red-500 focus:ring-red-500"
           : "border border-gray-300 focus:ring-green-600"
@@ -233,7 +233,7 @@ const handleSignIn = async (e) => {
           </button>
 
           {/* Create account link */}
-          <p className="text-center text-xs sm:text-sm text-gray-500">
+          <p className="text-center text-xs font-medium sm:text-sm text-gray-500">
             Don’t have an account?{" "}
           <span className="text-green-700 font-medium cursor-pointer"
           onClick={handleSignUp}>
@@ -248,9 +248,9 @@ const handleSignIn = async (e) => {
         <div className="mt-6 flex justify-center">
           <p
             onClick={handleHomeRedirect}
-            className="flex items-center cursor-pointer text-xs sm:text-sm text-gray-600 hover:text-green-700"
+            className="flex items-center font-medium cursor-pointer text-xs sm:text-sm text-gray-600 hover:text-green-700"
           >
-            <span className="mr-2">←</span> Back to home
+            <span className="mr-2 font-medium">←</span> Back to home
           </p>
         </div>
       </div>
